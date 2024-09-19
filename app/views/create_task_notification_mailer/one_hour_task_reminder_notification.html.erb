@@ -1,0 +1,9 @@
+<h1>Reminder</h1>
+<p>Hello <%= @user.email %>,</p>
+<p>You have a task "<%= @task.title %>" that is due in less than an hour.</p>
+<p>Details:</p>
+<ul>
+  <li>Description: <%= @task.description %></li>
+  <li>Start Date: <%= @task.start_date %></li>
+  <li>End Date: <%= @task.end_date %></li>
+</ul>
