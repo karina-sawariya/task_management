@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  skip_before_action :authenticate_user, only: [:create]
+  skip_before_action :authenticate_user
   before_action :find_user, only: [:show, :update, :destroy]
 
   def index 
@@ -12,13 +12,12 @@ class UsersController < ApplicationController
   end 
 
   def create
-    Rails.logger.debug("Received parameters: #{params.inspect}")   
-    @user = User.new(user_params)
-    if @user.save
-      render json: { message: "User created successfully" }, status: :created
+    user = User.new(user_params)
+    if user.save
+      token = encode_jwt_token(user.id)
+      render json: { user: user, token: token }, status: :created
     else
-      Rails.logger.debug("User errors: #{@user.errors.full_messages.inspect}")
-      render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
@@ -42,5 +41,9 @@ class UsersController < ApplicationController
   def find_user
     @user = User.find(params[:id])
   end 
+
+  def encode_jwt_token(user_id)
+    JWT.encode({ user_id: user_id, exp: 24.hours.from_now.to_i }, Rails.application.secrets.secret_key_base, 'HS256')
+  end
 end
   
