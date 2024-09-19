@@ -22,10 +22,12 @@ class UsersController < ApplicationController
   end
 
   def update
-    unless @user.update(user_params)
-      render json: {errors: @user.errors.full_messages}, status: 503
+    if @user.update(user_params)
+      render json: @user, status: 200
+    else
+      render json: { errors: @user.errors.full_messages }, status: 503
     end
-  end 
+  end
 
   def destroy
     @user.destroy
